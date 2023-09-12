@@ -17,6 +17,10 @@
   display: block;
 }
 
+.shared-moment-card.mdl-card {
+  margin: 10px auto;
+}
+
 .floating-button {
   z-index: 1000;
   position: fixed;

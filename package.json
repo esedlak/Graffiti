@@ -1,7 +1,7 @@
 {
-  "name": "IKT-PWA-01",
+  "name": "EDS_GFT_001",
   "version": "1.0.0",
-  "description": "Grundgerüst einer PWA",
+  "description": "Elisas Grafitti Archiv",
   "main": "index.js",
   "scripts": {
     "start": "http-server -c-1"
@@ -11,11 +11,11 @@
     "progressive",
     "web",
     "app",
-    "ikt",
-    "htw",
-    "fiw"
+    "graffiti",
+    "street",
+    "art"
   ],
-  "author": "J. freiheit",
+  "author": "esedlak",
   "license": "ISC",
   "devDependencies": {
     "http-server": "^14.1.0"

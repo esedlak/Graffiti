@@ -5,6 +5,7 @@
     "id": "/index.html",
     "display": "standalone",
     "background_color": "#000000",
+    "theme_color": "#008800",
     "description": "Eine Sammlung der Bilder, die ich von Graffiti aufnehme.",
     "lang": "de-DE",
     "dir": "ltr",

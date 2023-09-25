@@ -1,3 +1,10 @@
+//=====================================================
+// POST.ROUTES.JS
+// Diese Datei definiert die Routen für die Posts in der REST-Schnittstelle.
+// Datum: 18.09.2023
+//=====================================================
+
+// Erforderliche Module importieren
 const express = require('express');
 const router = express.Router();
 const Post = require('../models/posts')
@@ -31,9 +38,10 @@ function sendNotification() {
     // res.status(201).json({ message: 'push notification sent'});
 }
 
-/* ----------------- POST ---------------------------- */
-
-// POST one post
+//-----------------------------------------------------------------
+// POST One Post with single image-file
+// Diese Route sendet das hochgeladene File an die Datenbank und übergibt die URL als Antwort
+//-----------------------------------------------------------------
 router.post('/', upload.single('file'), async(req, res) => {
     if(req.file === undefined)
     {
@@ -55,7 +63,10 @@ router.post('/', upload.single('file'), async(req, res) => {
     }
 })
 
-/* ----------------- GET ---------------------------- */
+//-----------------------------------------------------------------
+// GET One Post
+// Diese Funktion sucht und gibt das Elemente in der Datenbank anhand der ID zurück.
+//-----------------------------------------------------------------
 
 function getOnePost(id) {
     return new Promise( async(resolve, reject) => {
@@ -88,6 +99,11 @@ function getOnePost(id) {
     })
 }
 
+//-----------------------------------------------------------------
+// GET all Posts
+// Diese Funktion sucht und gibt alle Elemente in der Datenbank als Antwort aus.
+// Sie ruft für jeden gefundenen Post die funktion GetOnePost auf
+//-----------------------------------------------------------------
 function getAllPosts() {
 	return new Promise( async(resolve, reject) => {
 		const sendAllPosts = [];
@@ -106,7 +122,11 @@ function getAllPosts() {
 	});
 }
 
-// GET one post via id
+//-----------------------------------------------------------------
+// GET one post by id
+// \id: ID des gesuchten Posts
+// Diese Route sucht nach einem Post in der Datenbank anhand seiner ID und sendet ihn als Antwort.
+//-----------------------------------------------------------------
 router.get('/:id', async(req, res) => {
     getOnePost(req.params.id)
     .then( (post) => {
@@ -114,6 +134,7 @@ router.get('/:id', async(req, res) => {
         res.send(post);
     })
     .catch( () => {
+        // Fehlerfall: ID existiert nicht, daher Statuscode 404 und Fehlermeldung senden
         res.status(404);
         res.send({
             error: "Post does not exist!"
@@ -121,7 +142,10 @@ router.get('/:id', async(req, res) => {
     })
 });
 
+//-----------------------------------------------------------------
 // GET all posts
+// Diese Route sucht alle Posts in der Datenbank und sendet sie als Antwort.
+//-----------------------------------------------------------------
 router.get('/', async(req, res) => {
     
     getAllPosts()
@@ -129,6 +153,7 @@ router.get('/', async(req, res) => {
         res.send(posts);
     })
     .catch( () => {
+        // Fehlerfall: ID existiert nicht, daher Statuscode 404 und Fehlermeldung senden
         res.status(404);
         res.send({
             error: "Post do not exist!"
@@ -137,17 +162,23 @@ router.get('/', async(req, res) => {
 });
 
 
-/* ----------------- DELETE ---------------------------- */
-
-// DELETE one post via id
+//-----------------------------------------------------------------
+//  DELETE one post via id
+//  \id: ID des gesuchten Posts
+//  Diese Route löscht einen Post aus der Datenbank anhand seiner ID.
+//-----------------------------------------------------------------
 router.delete('/:id', async(req, res) => {
     try {
+        // Finde ein Mongoose Datenobjekt das mit dem übergebenen ID-Parameter übereinstimmt
         const post = await Post.findOne({ _id: req.params.id })
         let fileName = post.image_id;
+        // Löscht den Hauptpost in der Datenbank anhand der ID
         await Post.deleteOne({ _id: req.params.id });
+        // Finde und Lösche das Objekt mit den die Binärdaten (Chunk) der Bilddatei in der Datenbank anhand der ID
         await collectionFiles.find({filename: fileName}).toArray( async(err, docs) => {
             await collectionChunks.deleteMany({files_id : docs[0]._id});
         })
+        //Lösche die Bildmetadaten in der Datenbank anhand der ID
         await collectionFiles.deleteOne({filename: fileName});
         res.status(204).send()
     } catch {

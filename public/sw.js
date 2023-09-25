@@ -107,3 +107,90 @@ self.addEventListener('fetch', event => {
             })
     )}
 })
+self.addEventListener('sync', event => {
+    console.log('service worker --> background syncing ...', event);
+    if(event.tag === 'sync-new-post') {
+        console.log('service worker --> syncing new posts ...');
+        event.waitUntil(
+            readAllData('sync-posts')
+                .then( dataArray => {
+                    for(let data of dataArray) {
+                        console.log('data from IndexedDB', data);
+                        const formData = new FormData();
+                        formData.append('title', data.title);
+                        formData.append('location', data.location);
+                        formData.append('file', data.image_id);
+
+                        console.log('formData', formData)
+
+                        fetch('http://localhost:3000/posts', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then( response => {
+                            console.log('Data sent to backend ...', response);
+                            if(response.ok) {
+                                deleteOneData('sync-posts', data.id)
+                            }
+                        })
+                        .catch( err => {
+                            console.log('Error while sending data to backend ...', err);
+                        })
+                    }
+                })
+        );
+    }
+})
+
+
+self.addEventListener('notificationclick', event => {
+    let notification = event.notification;
+    let action = event.action;
+
+    console.log(notification);
+
+    if(action === 'confirm') {
+        console.log('confirm was chosen');
+        notification.close();
+    } else {
+        console.log(action);
+        event.waitUntil(
+            clients.matchAll()      // clients sind alle Windows (Browser), fuer die der Service Worker verantwortlich ist
+                .then( clientsArray => {
+                    let client = clientsArray.find( c => {
+                        return c.visibilityState === 'visible';
+                    });
+
+                    if(client !== undefined) {
+                        client.navigate('notification.data.url');
+                        client.focus();
+                    } else {
+                        clients.openWindow('notification.data.url');
+                    }
+                    notification.close();
+                })
+        );
+    }
+});
+self.addEventListener('notificationclose', event => {
+    console.log('notification was closed', event);
+});
+self.addEventListener('push', event => {
+    console.log('push notification received', event);
+    let data = { title: 'Test', content: 'Fallback message', openUrl: '/'};
+    if(event.data) {
+        data = JSON.parse(event.data.text());
+    }
+
+    let options = {
+        body: data.content,
+        icon: '/src/images/icons/crown96x96.png',
+        data: {
+            url: data.openUrl
+        }
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
+});

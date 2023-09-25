@@ -10,21 +10,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet"
         href="https://code.getmdl.io/1.3.0/material.blue_grey-red.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.15.1/css/ol.css" type="text/css">
+  <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.15.1/build/ol.js"></script>
   <link rel="stylesheet" href="/src/css/app.css">
   <link rel="stylesheet" href="/src/css/feed.css">
   <link rel="manifest" href="/manifest.json">
 </head>
 <body>
-  <script>
-    // Check that service workers are supported
-    if ('serviceWorker' in navigator) {
-    // Use the window load event to keep the page load performant
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js');
-    });
-    }
-</script>
-
+ 
 <div id="app">
   <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
     <header class="mdl-layout__header">
@@ -41,57 +34,62 @@
             <button class="enable-notifications mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--accent">
               Benachrichtigungen Ein
             </button>
+            <button id="install" style="display:none; margin-left: 10px;" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
+              Installieren
+            </button>
           </div>
         </nav>
       </div>
-    </header>
-    <div class="mdl-layout__drawer">
-      <span class="mdl-layout-title">Mein Graffiti Archiv</span>
-      <nav class="mdl-navigation">
-        <a class="mdl-navigation__link" href="/">Bilder</a>
-        <a class="mdl-navigation__link" href="/help">Hilfe</a>
-        <div class="drawer-option">
-          <button class="enable-notifications mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--accent">
-            Benachrichtigungen Ein
-          </button>
+      </header>
+      <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title"><em>capture</em></span>
+        <nav class="mdl-navigation">
+          <a class="mdl-navigation__link" href="/">Bilder</a>
+          <a class="mdl-navigation__link" href="/help">Hilfe</a>
+          <div class="drawer-option">
+            <button class="enable-notifications mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--accent">
+              Benachrichtigungen Ein
+            </button>
+          </div>
+        </nav>
+      </div>
+      <main class="mdl-layout__content mat-typography">
+        <div id="create-post">
+          <form id="post-form"> <!-- Hinzugefügtes id-Attribut -->
+            <video id="player" autoplay></video>
+            <canvas id="canvas" width="320px" height="240px"></canvas>
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="capture-btn">Foto</button>
+            <div id="pick-image">
+              <h6>Bild auswählen</h6>
+              <input type="file" accept="image/*" id="image-picker">
+            </div>
+            <div class="input-section mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="title">
+              <label class="mdl-textfield__label" for="title">Titel</label>
+            </div>
+            <div class="input-section mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="location">
+              <label class="mdl-textfield__label" for="location">Ort</label>
+            </div>
+            <button class="mdl-button mdl-js-button mdl-button--raised" id="location-btn">Standort hinzufügen</button>
+            <div id="location-loader" class="mdl-spinner mdl-js-spinner is-active" style="display: none;"></div>
+          
+            <br>
+            <div>
+              <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--accent"
+                      type="submit" id="post-btn">Speichern
+              </button>
+            </div>
+            <br>
+            <div>
+              <button class="mdl-button mdl-js-button mdl-button--fab" id="close-create-post-modal-btn" type="button">
+                <i class="material-icons">Schließen</i>
+              </button>
+            </div>
+          </form>
         </div>
-      </nav>
-    </div>
-    <main class="mdl-layout__content mat-typography">
-      <div id="create-post">
-        <form>
-          <div class="input-section mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" type="text" id="title">
-            <label class="mdl-textfield__label" for="title" name="title">Titel</label>
-          </div>
-          <video id="player" autoplay></video>
-      <canvas id="canvas" width="320px" height="240px"></canvas>
-      <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="capture-btn">Foto</button>
-      <div id="pick-image">
-          <h6>Bild auswählen</h6>
-          <input type="file" accept="image/*" id="image-picker">
-      </div>
-          <div class="input-section mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="manual-location">
-            <input class="mdl-textfield__input" type="text" id="location">
-            <label class="mdl-textfield__label" for="location" name="location">Ort</label>
-          </div>
-          <br>
-          <div>
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--accent"
-                    type="submit" id="post-btn">Speichern
-            </button>
-          </div>
-          <br>
-          <div>
-            <button class="mdl-button mdl-js-button mdl-button--fab" id="close-create-post-modal-btn" type="button">
-              <i class="material-icons">close</i>
-            </button>
-          </div>
-        </form>
-      </div>
-      <img srcset="/src/images/Einhorn_immagic_lg.jpg 1200w
-                   /src/images/Einhorn_immagic600x450.jpg 600w
-                   /src/images/Einhorn_immagic_s.jpg 480w"
+    
+      <img src="./src/images/Einhorn_immagic_s.jpg"
            alt="Einfaches Graffiti-Einhorn mit dem Spruch: Ich bin magisch."
            class="main-image">
       <div class="page-content">
@@ -111,6 +109,41 @@
     </main>
   </div>
 </div>
+<script>
+  // Check that service workers are supported
+  if ('serviceWorker' in navigator) {
+  // Use the window load event to keep the page load performant
+  window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js');
+  });
+  }
+</script>
+<script>
+  const installButton = document.getElementById('install');
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', evt => {
+    evt.preventDefault();
+    deferredPrompt = evt;
+    installButton.style.display = 'block';
+  });
+
+  installButton.addEventListener('click', async () => {
+    await deferredPrompt.prompt();
+    const choiceResult = await deferredPrompt.userChoice;
+    if (choiceResult.outcome === 'accepted') {
+      console.log('Benutzer hat die Installation akzeptiert');
+      installButton.style.display = 'none';
+    } else {
+      console.log('Benutzer hat die Installation abgelehnt');
+    }
+    deferredPrompt = null;
+  });
+
+  window.addEventListener('appinstalled', () => {
+    installButton.style.display = 'none';
+  });
+</script>
 <script defer src="/src/js/material.min.js"></script>
 <script src="/src/js/idb.js"></script>
 <script src="/src/js/db.js"></script>

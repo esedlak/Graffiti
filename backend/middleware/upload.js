@@ -4,8 +4,7 @@ require('dotenv').config();
 
 const storage = new GridFsStorage({
     url: process.env.DB_CONNECTION,
-    options: { 
-        dbName: "Graffiti" },
+    options: { useNewUrlParser: true, useUnifiedTopology: true, dbName: process.env.DB_NAME },
     file: (req, file) => {
         const match = ["image/png", "image/jpg", "image/jpeg"];
 
@@ -13,8 +12,7 @@ const storage = new GridFsStorage({
         {
             return `${Date.now()}-jf-${file.originalname}`;
         }
-
-        // console.log('store');
+        
         return {
             bucketName: 'posts',
             filename: `${Date.now()}-jf-${file.originalname}`, 
@@ -23,6 +21,7 @@ const storage = new GridFsStorage({
     }
 })
 
+//Multer wird mit der GridFSStorage-Konfiguration initialisiert.
 console.log('store', storage)
 
 module.exports = multer({ storage });

@@ -1,34 +1,33 @@
-//=====================================================
-// SERVER.JS
-// Datum: 18.09.2023
-//=====================================================
+const express = require('express');
+const cors = require('cors');
+const postsRoutes = require('./routes/posts.routes');
+const subscriptionRoute = require('./routes/subscription.routes');
 
-// Importiere die benötigten Module
-const express = require('express');  // Express.js für die REST-API
-const postRoutes = require('./routes/posts.routes'); // Routen für Posts
-const cors = require('cors'); // Cors-Modul für Cross-Origin-Anfragen
+require('dotenv').config();
+const mongoose = require('mongoose');
+mongoose.connection = undefined;
 
-// Erstelle eine Express-App
 const app = express();
-
-// Port, auf dem der Server lauscht
-const PORT = 3000;
-
-// Middleware für das Parsen von JSON-Anfragen aktivieren
+//const PORT = process.env.PORT || 3000;
 app.use(express.json());
-
-// CORS (Cross-Origin Resource Sharing) aktivieren, um Anfragen von verschiedenen Ursprüngen zu ermöglichen
 app.use(cors());
 
-// Verknüpfe die Routen für die Posts unter dem Präfix '/posts'
-app.use('/posts', postRoutes);
+app.use('/posts', postsRoutes);
+app.use('/subscription', subscriptionRoute);
 
-
-// Starte den Server und höre auf dem angegebenen Port
-app.listen(PORT, (error) => {
-    if (error) {
-        console.log(error);
+app.listen(process.env.PORT, (error) => {
+    if(error) {
+        console.log('error', error)
     } else {
-        console.log(`server running on http://localhost:${PORT}`);
+        console.log(`server running on http://localhost:${process.env.PORT}`)
     }
-});
+})
+
+mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true, dbName: process.env.DB_NAME });
+const db = mongoose.connection;
+db.on('error', err => {
+    console.log(err);
+  });
+  db.once('open', () => {
+      console.log('connected to DB');
+  });

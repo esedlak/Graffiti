@@ -9,6 +9,12 @@ const db = idb.openDB('posts-store', 1, {
         });
         // Create an index on the '_id' property of the objects.
         store.createIndex('_id', '_id');
+        
+         // Create another store of objects
+         const store2 = db.createObjectStore('sync-posts', {
+            keyPath: 'id',
+        });
+        store2.createIndex('id', 'id');
     },
 });
 

@@ -12,6 +12,8 @@ const upload = require('../middleware/upload')
 const mongoose = require('mongoose')
 require('dotenv').config()
 
+const ObjectId = require('mongodb').ObjectId
+
 const connection = mongoose.createConnection(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true, dbName: process.env.DB_NAME });
 const webpush = require('web-push');
 
@@ -71,7 +73,7 @@ router.post('/', upload.single('file'), async(req, res) => {
 function getOnePost(id) {
     return new Promise( async(resolve, reject) => {
         try {
-            
+            //console.log(id);
             const post = await Post.findOne({ _id: id });
             let fileName = post.image_id;
             const files = connection.collection('posts.files');
@@ -87,6 +89,7 @@ function getOnePost(id) {
             }
             let base64file = 'data:' + allFiles[0].contentType + ';base64,' + fileData.join('');
             let getPost = new Post({
+                "_id": post._id,
                 "title": post.title,
                 "location": post.location, 
                 "image_id": base64file
@@ -128,7 +131,9 @@ function getAllPosts() {
 // Diese Route sucht nach einem Post in der Datenbank anhand seiner ID und sendet ihn als Antwort.
 //-----------------------------------------------------------------
 router.get('/:id', async(req, res) => {
-    getOnePost(req.params.id)
+
+    const id_obj = new ObjectId(req.params.id);
+    getOnePost(id_obj)
     .then( (post) => {
         console.log('post', post);
         res.send(post);
@@ -167,23 +172,50 @@ router.get('/', async(req, res) => {
 //  \id: ID des gesuchten Posts
 //  Diese Route löscht einen Post aus der Datenbank anhand seiner ID.
 //-----------------------------------------------------------------
-router.delete('/:id', async(req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
-        // Finde ein Mongoose Datenobjekt das mit dem übergebenen ID-Parameter übereinstimmt
-        const post = await Post.findOne({ _id: req.params.id })
-        let fileName = post.image_id;
-        // Löscht den Hauptpost in der Datenbank anhand der ID
-        await Post.deleteOne({ _id: req.params.id });
-        // Finde und Lösche das Objekt mit den die Binärdaten (Chunk) der Bilddatei in der Datenbank anhand der ID
-        await collectionFiles.find({filename: fileName}).toArray( async(err, docs) => {
-            await collectionChunks.deleteMany({files_id : docs[0]._id});
-        })
-        //Lösche die Bildmetadaten in der Datenbank anhand der ID
-        await collectionFiles.deleteOne({filename: fileName});
-        res.status(204).send()
+        // Erzeugt ein MongoDB-Objekt-ID aus dem in der Anfrage übergebenen ID-Parameter
+        const id_obj = new ObjectId(req.params.id);
+        
+        const collection = connection.collection('posts');
+        const filesCollection = connection.collection('posts.files');
+        const chunksCollection = connection.collection('posts.chunks');
+
+        // Löscht den Post in der Datenbank anhand der ID
+        const post = await collection.findOne({ _id: id_obj });
+        
+        if (!post) {
+            // Wenn der Post nicht gefunden wurde, sende Statuscode 404 und Fehlermeldung
+            res.status(404);
+            res.send({ error: "Post does not exist!" });
+            return; // Beende die Funktion hier, um Doppel-Löschvorgänge zu verhindern
+        }
+        
+        // Finde alle Dateidokumente mit dem gleichen Dateinamen in der "files"-Sammlung
+        const files = await filesCollection.findOne({ filename: post.image_id });
+        
+        // Lösche alle Datei-Chunks, die mit den Dateidokumenten verknüpft sind
+        await chunksCollection.deleteMany({ files_id: files._id });
+
+        // Lösche alle Dateidokumente mit dem gleichen Dateinamen
+        await filesCollection.deleteOne({ filename: post.image_id });
+
+        // Lösche den Post aus der Haupt-Collection
+        const deletePost = await collection.deleteOne({ _id: id_obj });
+
+        // Wenn der Post erfolgreich gelöscht wurde, sende Statuscode 204 (Erfolgreich, keine Inhaltsangabe)
+        if (deletePost.deletedCount === 1) {
+            res.status(204)
+            res.send({ message: "deleted" })
+        } else {
+            // Wenn der Post nicht gefunden wurde, sende Statuscode 404 und Fehlermeldung
+            res.status(404)
+            res.send({ error: "Post does not exist!" })
+        }
     } catch {
+        // Fehlerfall: Etwas ist schiefgelaufen, daher Statuscode 404 und Fehlermeldung senden
         res.status(404)
-        res.send({ error: "Post does not exist!" })
+        res.send({ error: "something wrong" })
     }
 });
 

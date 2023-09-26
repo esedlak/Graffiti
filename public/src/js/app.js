@@ -15,11 +15,11 @@ function displayConfirmNotification() {
     if('serviceWorker' in navigator) {
         let options = {
             body: 'You successfully subscribed to our Notification service!',
-            icon: '/src/images/icons/fiw96x96.png',
+            icon: '/src/images/icons/crown96x96.png',
             image: '/src/images/htw-sm.jpg',
             lang: 'de-DE',
             vibrate: [100, 50, 200],
-            badge: '/src/images/icons/fiw96x96.png',
+            badge: '/src/images/icons/crown96x96.png',
             tag: 'confirm-notification',
             renotify: true,
             actions: [
@@ -70,6 +70,7 @@ function configurePushSubscription() {
                     applicationServerKey: convertedVapidPublicKey,
                 });
             } else {
+
                 /* zum Testen, falls subscription bereits existierte, 
              * aber neue erstellt werden soll
              

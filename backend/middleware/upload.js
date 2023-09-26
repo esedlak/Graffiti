@@ -10,12 +10,12 @@ const storage = new GridFsStorage({
 
         if(match.indexOf(file.mimetype) === -1)
         {
-            return `${Date.now()}-jf-${file.originalname}`;
+            return `${Date.now()}-es-${file.originalname}`;
         }
-        
+
         return {
             bucketName: 'posts',
-            filename: `${Date.now()}-jf-${file.originalname}`, 
+            filename: `${Date.now()}-es-${file.originalname}`, 
             request: req
         }
     }

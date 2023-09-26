@@ -16,14 +16,18 @@ git clone https://github.com/esedlak/Graffiti.git
 cd Graffiti
 ```
 #### 2. Node.js Installieren
-Dieses Projekt läuft mit Node.js. Dieses muss auf Ihrem Rechner installiert werden. Sie sind in ihrem Terminal jetzt schon im Ordner Graffiti, jetzt geben Sie einfach den Befehl:
+Dieses Projekt läuft mit Node.js. Dieses muss vorher auf Ihrem Rechner installiert werden. 
+
+Node.js: [Installationsanleitung](https://nodejs.org/) 
+
+Sie sind in ihrem Terminal jetzt schon im Ordner Graffiti, jetzt geben Sie einfach den folgenden Befehl ein um alle benötigen npm-Pakete zu installieren:
 
 ```bash
 npm install
 ```
 #### 3. MongoDB aufsetzen
 Diese PWA speichert ihre Daten in Ihrer persönlichen Datenbank. Diese müssen Sie jetzt erstellen.
-Unter https://www.mongodb.com/atlas/Datenbankkönnen Sie einen kostenlosen Cluster erstellen und Benutzer inklusive Passwort dafür erstellen. Bitte wählen Sie KEINE Zertifikatauthentifizierung sondern ausschließlich ein Passwort. Notieren Sie sich den Benutzernamen und das Passwort, welches Sie für die Datenbank festgelegt haben. Ihr Datenbankname ist auch wichtig zu notieren.
+Unter https://www.mongodb.com können Sie einen kostenlosen Cluster erstellen und Benutzer inklusive Passwort dafür erstellen. Bitte wählen Sie KEINE Zertifikatauthentifizierung sondern ausschließlich ein Passwort. Notieren Sie sich den Benutzernamen und das Passwort, welches Sie für die Datenbank festgelegt haben. Ihr Datenbankname ist auch wichtig zu notieren.
 
 #### 4. .env Datei erstellen
 Durch das Klonen des GitHub Repositories sind leider nicht alle benötigten Dateien in Ihren Ordner geladen worden, da das sicherheitstechnisch nicht geht. Sie müssen jetzt eine Datei namens .env im Backend Ordner erstellen. Dort hinterlegen Sie die von Ihnen in 3. festgelegten Informationen wie folgt:
@@ -37,10 +41,12 @@ Der Link für DB_CONNECTION ist der Verbindungslink für Ihre MongoDB. Dieser l�
 Den Datenbanknamen haben Sie selbst festgelegt. Er ist nicht der Clustername.
 
 # Start
-Jetzt öffnen Sie ein Terminal im Ordner Backend. Dort geben Sie einen npm-Befehl ein.
+Jetzt öffnen Sie ein Terminal im Ordner Backend und geben dort einen npm-Befehl ein.
 
 ##### Was ist denn npm?
+Im Ordner Backend finden Sie die Datei package.json. Sie enthält neben den verwendeten npm-Paketen ebenso das Standardskript zum Ausführen des Backends, das nun im folgenden Schritt gestartet wird.  
 Im Ordner Backend ist innerhalb der Datei package.json ein kleines Skript eingebunden. Das sieht in diesem Fall so aus:
+
 ```json
 "scripts": {
 "backend": "node server.js"
@@ -85,8 +91,8 @@ server running on http://localhost:3000
 connected to DB
 ```
 #### 2. Frontend starten
-Öffnen Sie jetzt ein zweites Terminalfeld, welches im Hauptordner Graffiti startet.
-Dort geben Sie wieder einen npm-Befehl ein, der ein Skript im package.json des Frontends ausführt:
+Öffnen Sie jetzt ein zweites Terminal im Hauptordner Graffiti.
+Dort geben Sie wieder einen npm-Befehl ein, der ein Skript aus der package.json Datei des Frontends ausführt.
 ```bash
 npm start
 ```
@@ -116,11 +122,7 @@ Available on:
   http://192.168.178.26:8080
   http://127.0.0.1:8080
 ```
-Wenn Sie auf 
-```bash
-  http://127.0.0.1:8080
-```
-klicken, gelangen Sie zur Oberfläche der PWA.
+Wenn Sie auf einen der Links klicken z.B. `http://127.0.0.1:8080` gelangen Sie zur Oberfläche der PWA.
 
 #### 3. (Optional) ngrok für eine sichere Verbindung
 Wenn Sie Ihre PWA auch von außerhalb Ihres Gerätes erreichen wollen, müssen Sie einen sicheren Tunnel über ngrok erstellen.
@@ -129,11 +131,11 @@ Nutzen Sie Windows, laden Sie sich eine .exe Datei herunter. Diese öffnen Sie u
 ```bash
   ngrok http 8080
 ```
-eingeben. Dann gibt ngrok einen Link aus, welcher diesem ähnelt:
+eingeben. Dann gibt ngrok eine Adresse aus, welche auf den übergebenen Port verweist und dieser ähnelt:
 ```bash
-  https://ca5f-2a0a-2782-3f3-a545-41cd-9a71-ec8-2b5f.ngrok-free.app -> http://localhost:8080
+ Forwarding https://ca5f-2a0a-2782-3f3-a545-41cd-9a71-ec8-2b5f.ngrok-free.app -> http://localhost:8080
 ```
-Diesen Link kopieren Sie und geben ihn in die Browserleiste ein. 
+Diesen Link (von https bis .app) kopieren Sie und geben ihn in die Browserleiste ein. 
 
 # Verwendung
 Sie werden auf eine Website geleitet, welche mobil ungefähr so aussieht. 
@@ -156,4 +158,4 @@ Geben Sie Ihrem Foto einen Titel und einen Ort. Diesen können Sie entweder manu
 ###  Weiterführende Links
 - Node.js: [Installationsanleitung](https://nodejs.org/)
 - MongoDB: [Installationsanleitung](https://docs.mongodb.com/manual/installation/)
-- MongoDB Cloud: [Website](https://cloud.mongodb.com/)
+- ngrok: [Website](https://ngrok.com)

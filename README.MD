@@ -123,6 +123,17 @@ Wenn Sie auf
 klicken, gelangen Sie zur Oberfläche der PWA.
 
 #### 3. (Optional) ngrok für eine sichere Verbindung
+Wenn Sie Ihre PWA auch von außerhalb Ihres Gerätes erreichen wollen, müssen Sie einen sicheren Tunnel über ngrok erstellen.
+Gehen Sie dafür auf https://ngrok.com/download und folgen den Anweisungen für Ihr Betriebssystem. 
+Nutzen Sie Windows, laden Sie sich eine .exe Datei herunter. Diese öffnen Sie und fügen im Terminal Ihren Authtoken hinzu, welchen Sie vorher erstellt haben. Sobald Sie diesen hinzugefügt haben, müssen Sie im Terminal nur noch 
+```bash
+  ngrok http 8080
+```
+eingeben. Dann gibt ngrok einen Link aus, welcher diesem ähnelt:
+```bash
+  https://ca5f-2a0a-2782-3f3-a545-41cd-9a71-ec8-2b5f.ngrok-free.app -> http://localhost:8080
+```
+Diesen Link kopieren Sie und geben ihn in die Browserleiste ein. 
 
 # Verwendung
 Sie werden auf eine Website geleitet, welche mobil ungefähr so aussieht. 
